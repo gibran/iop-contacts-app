@@ -37,6 +37,7 @@ android {
         exclude 'messages.properties'
         exclude 'META-INF/services/sun.net.spi.nameservice.NameServiceDescriptor'
         exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
     }
     lintOptions {
         abortOnError false
@@ -72,4 +73,5 @@ dependencies {
     //qr
     compile group: 'com.google.zxing', name: 'core', version: '3.3.0'
 
+    compile 'com.android.support:exifinterface:27.1.1'
 }

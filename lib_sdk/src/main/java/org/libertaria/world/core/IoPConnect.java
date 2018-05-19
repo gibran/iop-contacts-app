@@ -14,8 +14,10 @@ import org.libertaria.world.crypto.Crypto;
 import org.libertaria.world.crypto.CryptoBytes;
 import org.libertaria.world.crypto.CryptoWrapper;
 import org.libertaria.world.global.DeviceLocation;
+import org.libertaria.world.global.GpsLocation;
 import org.libertaria.world.global.Version;
 import org.libertaria.world.locnet.Explorer;
+import org.libertaria.world.locnet.NodeInfo;
 import org.libertaria.world.profile_server.CantConnectException;
 import org.libertaria.world.profile_server.CantSendMessageException;
 import org.libertaria.world.profile_server.ProfileInformation;
@@ -358,6 +360,25 @@ public class IoPConnect implements ConnectionListener {
             throw new IllegalStateException("Connection is not ready or connecting to register a service");
         }
 
+    }
+
+    /***
+     * Responsable to return a list of PofileServer Nodes near a geolocation
+     * @param latitude -> Latitude where you would like to list a profile server
+     * @param longitude  -> Longitude where you would like to list a profile server
+     * @param maxRadiusKm -> Maximum of radius in kilometers to looking for a profile servers
+     * @param maxNumberOfNodes -> Maximum of nodes to return in list of nodes
+     * @throws Exception
+     */
+    public List<NodeInfo> getProfileServers(float latitude, float longitude, float maxRadiusKm, int maxNumberOfNodes) throws Exception {
+        //TODO: Gibran
+        GpsLocation location = new GpsLocation(latitude, longitude);
+        Explorer explorer = new Explorer(org.libertaria.world.locnet.NodeInfo.ServiceType.Profile, location, maxRadiusKm, maxNumberOfNodes);
+        FutureTask<List<org.libertaria.world.locnet.NodeInfo>> task = new FutureTask<>(explorer);
+        task.run();
+        List<org.libertaria.world.locnet.NodeInfo> resultNodes = task.get();
+
+        return resultNodes;
     }
 
     public void connectProfile(String profilePublicKey, byte[] ownerChallenge, ConnectionFuture future) throws Exception {

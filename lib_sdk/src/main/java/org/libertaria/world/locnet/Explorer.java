@@ -16,11 +16,11 @@ public class Explorer implements Callable<List<NodeInfo>>{
 
     static int DefaultClientPort = 16981;
     static List<String> SeedServers = Arrays.asList(
-        //"ham4.fermat.cloud",
-        //"ham5.fermat.cloud",
-        //"ham6.fermat.cloud",
-        //"ham7.fermat.cloud"
-        "localhost"
+//        "ham4.fermat.cloud",
+//        "ham5.fermat.cloud",
+//        "ham6.fermat.cloud",
+//        "ham7.fermat.cloud"
+        "titania.local"
     );
 
 
@@ -62,7 +62,9 @@ public class Explorer implements Callable<List<NodeInfo>>{
             String seedHost = remainingSeeds.remove(selectedSeedIdx);
             // TODO log error instead of printing to console
             try { return new Session(seedHost, DefaultClientPort); }
-            catch (Exception ex) { System.out.println("Failed to contact seed server " + seedHost); }
+            catch (Exception ex) {
+                System.out.println("Failed to contact seed server " + seedHost);
+            }
         }
         throw new IOException("All seed servers tried and failed");
     }
@@ -73,6 +75,7 @@ public class Explorer implements Callable<List<NodeInfo>>{
         // Find closest node to specified searchLocation
         Session session = createSeedSession();
         NodeInfo oldClosestNode = null;
+
         NodeInfo newClosestNode = session.getNodeInfo();
         while ( oldClosestNode == null || // Just starting up or successfully got closer to the specified location
                 getDistanceKm( newClosestNode.getLocation() ) < getDistanceKm( oldClosestNode.getLocation() ) )
@@ -92,14 +95,15 @@ public class Explorer implements Callable<List<NodeInfo>>{
         //      Probably the filter itself should be integrated into the protobuf definitions.
         List<NodeInfo> collectedNodes = session.getClosestNodes(
             searchLocation, maxRadiusKm, 2 * maxNodeCount, true);
-        List<NodeInfo> matchingNodes = filterType(collectedNodes, serviceType);
+
+        //List<NodeInfo> matchingNodes = filterType(collectedNodes, serviceType);
         // TODO what algorithmic strategy to follow here to collect more nodes if necessary?
         /*while ( matchingNodes.size() < maxNodeCount ) {
             //TODO check if there is any chance to get more nodes;
             List<NodeInfo> nodes = filterDistance(matchingNodes, maxRadiusKm);
             //todo: don't fuck it..
         }*/
-        return matchingNodes.subList( 0, Math.min( matchingNodes.size(), maxNodeCount) );
+        return collectedNodes.subList( 0, Math.min( collectedNodes.size(), maxNodeCount) );
     }
 
 
