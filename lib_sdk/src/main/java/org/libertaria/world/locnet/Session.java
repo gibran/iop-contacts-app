@@ -82,6 +82,7 @@ public class Session {
         if (response.getClientResponseTypeCase() != IopLocNet.ClientResponse.ClientResponseTypeCase.GET_NODE_INFO) {
             throw new IllegalStateException("Received unexpected response type");
         }
+
         return Converter.fromProtoBuf(response.getGetNodeInfo().getNodeInfo());
     }
 }

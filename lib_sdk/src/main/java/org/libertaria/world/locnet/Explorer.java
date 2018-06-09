@@ -20,7 +20,7 @@ public class Explorer implements Callable<List<NodeInfo>>{
 //        "ham5.fermat.cloud",
 //        "ham6.fermat.cloud",
 //        "ham7.fermat.cloud"
-        "titania.local"
+            "namihouse.ddns.net"
     );
 
 

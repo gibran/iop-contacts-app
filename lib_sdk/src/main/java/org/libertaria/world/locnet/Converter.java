@@ -3,6 +3,7 @@ package org.libertaria.world.locnet;
 import org.libertaria.world.global.GpsLocation;
 import org.libertaria.world.locnet.protocol.IopLocNet;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -25,8 +26,13 @@ public class Converter
 
     public static NodeInfo.Contact fromProtoBuf(IopLocNet.NodeContact contact) throws UnknownHostException
     {
-        return new NodeInfo.Contact(
-            InetAddress.getByAddress( contact.getIpAddress().toByteArray() ),
+        byte[] byteAddress = contact.getIpAddress().toByteArray();
+        InetAddress address = null;
+
+        if (byteAddress.length > 0)
+            address = InetAddress.getByAddress(byteAddress);
+
+        return new NodeInfo.Contact(address,
             contact.getClientPort() );
     }
 
@@ -61,9 +67,14 @@ public class Converter
                 info.getServiceData().toByteArray() ) );
         }
 
+        IopLocNet.NodeContact contact = node.getContact();
+
+        if (contact.getIpAddress().size() == 0)
+            return null;
+
         return new NodeInfo(
             node.getNodeId().toByteArray(),
-            fromProtoBuf( node.getContact() ),
+            fromProtoBuf(  contact ),
             fromProtoBuf( node.getLocation() ),
             services );
     }
@@ -72,8 +83,12 @@ public class Converter
     public static List<NodeInfo> fromProtoBuf(List<IopLocNet.NodeInfo> nodes) throws UnknownHostException
     {
         ArrayList<NodeInfo> result = new ArrayList<>();
-        for (IopLocNet.NodeInfo node : nodes)
-            { result.add( Converter.fromProtoBuf(node) ); }
+        for (IopLocNet.NodeInfo node : nodes) {
+                NodeInfo nodeConvert = Converter.fromProtoBuf(node);
+
+                if (nodeConvert != null)
+                    result.add(  nodeConvert );
+        }
         return result;
     }
 
